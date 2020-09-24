@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package test;
+
+option go_package=".;myprotos";
+
+message Person{
+    int32 id=1;
+    string name=2;
+}
+
+message PMes{
+    string class=1;
+    string teacherName=2;
+
+}
+
+message PhotoMessage{
+    bytes data = 1;
+}
+
+message PhotoResponse{
+    int32 statusCode=1;
+}
+
+enum Gender{
+    option allow_alias=true;
+    MAN=0;
+    WOMEN=1;
+    BOY=2;
+    GIRL=1;
+}
+
+
+service Student{
+    rpc GetMess (Person) returns (PMes);
+    rpc GetAll(Person) returns (stream PMes);
+    rpc SendPhoto(stream PhotoMessage) returns (PhotoResponse);
+}
