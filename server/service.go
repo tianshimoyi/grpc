@@ -34,6 +34,15 @@ var (
 			TeacherName: "邹国红",
 		},
 	}
+	commMes = []myprotos.ResponseComm{{
+		Price: 38.3,
+		Stock: 500,
+	},
+		{
+			Price: 40.3,
+			Stock: 200,
+		},
+	}
 )
 
 //一元
@@ -89,6 +98,29 @@ func (s *StuServer) SendPhoto(stream myprotos.Student_SendPhotoServer) error {
 	}
 	//	fmt.Println(len(img))
 	//	file.Write(img)
+	return nil
+}
+
+//stream both
+
+func (s *StuServer) SearchComm(stream myprotos.Student_SearchCommServer) error {
+
+	for {
+		data, err := stream.Recv()
+		if err == io.EOF {
+			fmt.Println("客户端发送数据完毕")
+			break
+		} else if err != nil {
+			panic(err.Error())
+		}
+		if data.Id == 1 {
+			fmt.Println("服务端接收到数据1")
+			stream.Send(&commMes[0])
+		} else if data.Id == 2 {
+			fmt.Println("服务端接受到数据2")
+			stream.Send(&commMes[1])
+		}
+	}
 	return nil
 }
 

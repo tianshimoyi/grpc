@@ -23,6 +23,16 @@ message PhotoResponse{
     int32 statusCode=1;
 }
 
+message Commodity{
+    int32 id=1;
+    string name=2;
+}
+
+message ResponseComm{
+    float price=1;
+    int32 stock=2;
+}
+
 enum Gender{
     option allow_alias=true;
     MAN=0;
@@ -36,4 +46,5 @@ service Student{
     rpc GetMess (Person) returns (PMes);
     rpc GetAll(Person) returns (stream PMes);
     rpc SendPhoto(stream PhotoMessage) returns (PhotoResponse);
+    rpc SearchComm(stream Commodity) returns (stream ResponseComm);
 }
