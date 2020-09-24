@@ -14,6 +14,19 @@ import (
 	//"google.golang.org/genproto/googleapis/iam/credentials/v1"
 )
 
+var (
+	comm = []myprotos.Commodity{
+		{
+			Id:   1,
+			Name: "手机",
+		},
+		{
+			Id:   2,
+			Name: "电灯",
+		},
+	}
+)
+
 func StartClinet() {
 	creds, err := credentials.NewClientTLSFromFile("./cert/server.crt", "")
 	if err != nil {
@@ -28,7 +41,8 @@ func StartClinet() {
 	client := myprotos.NewStudentClient(conn)
 	//getRepneMess(client)
 	//
-	sendPhoto(client)
+	//sendPhoto(client)
+	CommMessages(client)
 }
 
 func sendPhoto(client myprotos.StudentClient) {
@@ -84,4 +98,30 @@ func getRepneMess(client myprotos.StudentClient) {
 		}
 		fmt.Printf("%+v\n", res)
 	}
+}
+
+func CommMessages(client myprotos.StudentClient) {
+	stream, err := client.SearchComm(context.Background())
+	if err != nil {
+		panic(err.Error())
+	}
+	finished := make(chan struct{})
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				finished <- struct{}{}
+				break
+			}
+			if err != nil {
+				panic(err.Error())
+			}
+			fmt.Printf("%+v", res)
+		}
+	}()
+	for _, v := range comm {
+		stream.Send(&v)
+	}
+	stream.CloseSend()
+	<-finished
 }
